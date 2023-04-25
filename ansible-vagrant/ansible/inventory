@@ -1,0 +1,2 @@
+lab01 ansible_host=192.168.123.11
+lab02 ansible_host=192.168.123.12
