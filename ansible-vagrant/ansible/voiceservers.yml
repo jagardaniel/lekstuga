@@ -1,0 +1,6 @@
+---
+
+- hosts: voiceservers
+  roles:
+    - common
+    - teamspeak3-server

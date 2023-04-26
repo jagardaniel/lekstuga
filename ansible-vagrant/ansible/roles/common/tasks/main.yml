@@ -1,0 +1,4 @@
+---
+
+- import_tasks: persistent_journal.yml
+- import_tasks: firewalld.yml

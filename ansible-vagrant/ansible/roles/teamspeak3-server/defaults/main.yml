@@ -1,0 +1,14 @@
+---
+
+teamspeak_version: 3.13.7
+teamspeak_checksum: sha256:775a5731a9809801e4c8f9066cd9bc562a1b368553139c1249f2a0740d50041e
+teamspeak_dir: /opt/teamspeak3-server
+
+teamspeak_voice_ip: ""
+teamspeak_voice_port: 9987
+teamspeak_filetransfer_ip: ""
+teamspeak_filetransfer_port: 30033
+teamspeak_query_ip: 127.0.0.1
+teamspeak_query_port: 10011
+teamspeak_query_ssh_ip: 127.0.0.1
+teamspeak_query_ssh_port: 10022

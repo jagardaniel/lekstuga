@@ -1,0 +1,8 @@
+---
+
+# One problem in our lab environment is that we may reuse one VM for multiple roles
+# This means that the variable will be overwritten if we define it on host or group level
+# To keep it simple just open up necessary ports on all VMs
+firewalld_ports:
+  - 5432/tcp # PostgreSQL
+  - 9987/udp # TeamSpeak3 server

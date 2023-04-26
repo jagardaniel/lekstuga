@@ -1,0 +1,80 @@
+---
+
+- name: Add group
+  ansible.builtin.group:
+    name: teamspeak
+    state: present
+    system: true
+
+- name: Add user
+  ansible.builtin.user:
+    name: teamspeak
+    state: present
+    system: true
+    shell: /sbin/nologin
+    createhome: false
+    home: "{{ teamspeak_dir }}"
+
+- name: Create directory
+  ansible.builtin.file:
+    path: "{{ teamspeak_dir }}"
+    state: directory
+    owner: teamspeak
+    group: teamspeak
+    mode: 0750
+
+# Add a check here in the future so we don't run these tasks if we are already on the same version
+# -----
+- name: Create temporary download directory
+  ansible.builtin.tempfile:
+    state: directory
+  register: temp_dir
+
+- name: Download server binary
+  ansible.builtin.get_url:
+    url: "https://files.teamspeak-services.com/releases/server/{{ teamspeak_version }}/teamspeak3-server_linux_amd64-{{ teamspeak_version }}.tar.bz2"
+    dest: "{{ temp_dir['path'] }}"
+    checksum: "{{ teamspeak_checksum }}"
+
+- name: Extract archive
+  ansible.builtin.unarchive:
+    src: "{{ temp_dir['path'] }}/teamspeak3-server_linux_amd64-{{ teamspeak_version }}.tar.bz2"
+    dest: "{{ teamspeak_dir }}"
+    remote_src: true
+    owner: teamspeak
+    group: teamspeak
+    extra_opts:
+      - "--strip-components=1"
+
+- name: Remove temporary download directory
+  ansible.builtin.file:
+    path: "{{ temp_dir['path'] }}"
+    state: absent
+# -----
+
+- name: Copy configuration
+  ansible.builtin.template:
+    src: ts3server.ini.j2
+    dest: "{{ teamspeak_dir }}/ts3server.ini"
+    owner: teamspeak
+    group: teamspeak
+  notify:
+    - restart teamspeak3-server
+
+- name: Copy systemd unit file
+  ansible.builtin.template:
+    src: teamspeak3-server.service.j2
+    dest: /etc/systemd/system/teamspeak3-server.service
+  notify:
+   - restart teamspeak3-server
+
+- name: Copy logrotate configuration
+  ansible.builtin.template:
+    src: teamspeak3-server-logrotate.j2
+    dest: /etc/logrotate.d/teamspeak3-server
+
+- name: Start and enable service
+  ansible.builtin.service:
+    name: teamspeak3-server
+    state: started
+    enabled: yes

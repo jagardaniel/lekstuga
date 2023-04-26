@@ -1,0 +1,69 @@
+---
+
+- name: Install packages
+  ansible.builtin.package:
+    name: 
+      - postgresql-server
+      - python3-psycopg2
+    state: present
+
+- name: Check if PostgreSQL has been initialized
+  ansible.builtin.stat:
+    path: /var/lib/pgsql/data/pg_hba.conf
+  register: check_install
+
+- name: Initialize PostgreSQL
+  ansible.builtin.command:
+    cmd: /usr/bin/postgresql-setup --initdb
+  when: not check_install.stat.exists
+
+- name: Copy local configuration
+  ansible.builtin.template:
+    src: local.conf.j2
+    dest: /var/lib/pgsql/data/local.conf
+    owner: postgres
+    group: postgres
+    mode: 0600
+  notify:
+    - restart postgresql
+
+- name: Include local configuration
+  ansible.builtin.lineinfile:
+    path: /var/lib/pgsql/data/postgresql.conf
+    line: "include = 'local.conf'"
+  notify:
+    - restart postgresql
+
+- name: Copy client authentication configuration
+  ansible.builtin.template:
+    src: pg_hba.conf.j2
+    dest: /var/lib/pgsql/data/pg_hba.conf
+    owner: postgres
+    group: postgres
+    mode: 0600
+  notify:
+    - reload postgresql
+
+- name: Start and enable service
+  ansible.builtin.service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Manage users
+  community.postgresql.postgresql_user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    state: "{{ item.state }}"
+  loop: "{{ postgresql_users }}"
+  loop_control:
+    label: "{{ item.name }}"
+  become_user: postgres
+
+- name: Manage databases
+  community.postgresql.postgresql_db:
+    name: "{{ item.name }}"
+    owner: "{{ item.owner }}"
+    state: "{{ item.state }}"
+  loop: "{{ postgresql_databases }}"
+  become_user: postgres

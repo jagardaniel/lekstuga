@@ -1,0 +1,10 @@
+---
+
+- name: Permit traffic for specified ports
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    zone: "{{ firewalld_zone }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ firewalld_ports }}"

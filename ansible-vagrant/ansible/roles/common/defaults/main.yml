@@ -1,0 +1,9 @@
+---
+
+firewalld_zone: public
+firewalld_ports: []
+
+# Example:
+# firewalld_ports:
+#   - 8080/tcp
+#   - 1337/udp

@@ -1,0 +1,16 @@
+---
+
+postgresql_listen_addresses: "*"
+
+postgresql_allowed_networks:
+  - 192.168.123.0/24
+
+postgresql_users:
+  - name: daniel
+    password: test
+    state: present
+  
+postgresql_databases:
+  - name: daniel
+    owner: daniel
+    state: present
