@@ -1,0 +1,8 @@
+This is the message of the day!
+
+Host name: {{ ansible_nodename }}
+OS: {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_os_family }})
+Processors: {{ ansible_processor_vcpus }}
+RAM: {{ (ansible_memtotal_mb * 0.001)|int }} GB
+
+
