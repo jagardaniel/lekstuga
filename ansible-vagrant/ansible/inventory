@@ -6,3 +6,6 @@ lab01
 
 [voiceservers]
 lab01
+
+[prometheus]
+lab01

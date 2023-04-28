@@ -1,0 +1,10 @@
+---
+
+# We need to node-exporter on all nodes for this role to be useful
+- hosts: all
+  roles:
+    - common
+
+- hosts: prometheus
+  roles:
+    - prometheus
