@@ -1,0 +1,25 @@
+---
+
+- name: Update all servers
+  hosts: all
+
+  tasks:
+    - name: Update all packages
+      ansible.builtin.package:
+        name: "*"
+        state: latest
+
+    - name: Check if a reboot is required
+      ansible.builtin.command:
+        /usr/bin/needs-restarting -r
+      ignore_errors: True
+      changed_when: False
+      register: reboot_required
+
+    - name: Reboot server
+      ansible.builtin.reboot:
+      when: reboot_required.rc == 1
+
+    - name: Autoremove packages
+      ansible.builtin.dnf:
+        autoremove: true
