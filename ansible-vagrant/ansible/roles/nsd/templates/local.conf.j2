@@ -1,0 +1,15 @@
+server:
+    ip-address: {{ nsd_ip_address }}
+    port: {{ nsd_port }}
+    verbosity: {{ nsd_verbosity }}
+    hide-version: {{ 'yes' if nsd_hide_version else 'no' }}
+    zonesdir: {{ nsd_zonesdir }}
+
+remote-control:
+    control-enable: {{ 'yes' if nsd_remote_control else 'no' }}
+
+{% for zone in nsd_zones %}
+zone:
+    name: {{ zone.name }}
+    zonefile: {{ zone.name }}.zone
+{% endfor %}

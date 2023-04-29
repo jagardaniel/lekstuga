@@ -1,0 +1,23 @@
+---
+
+nsd_ip_address: 0.0.0.0
+nsd_port: 53
+nsd_verbosity: 1
+nsd_hide_version: yes
+nsd_zonesdir: /etc/nsd/zones
+nsd_remote_control: true
+nsd_zones: []
+
+# Example:
+# nsd_zones:
+#   - name: lab.internal
+#     soa: lab01.lab.internal
+#     serial: 1
+#     name_servers:
+#       - lab01
+#       - lab02
+#     records:
+#       - name: lab01
+#         content: 1.2.3.4
+#       - name: lab02
+#         content: 1.2.3.5

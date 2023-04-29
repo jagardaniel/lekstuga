@@ -1,10 +1,41 @@
 ---
-
-# One problem in our lab environment is that we may reuse one VM for multiple roles
+# A problem in the lab environment is that we may reuse the same VM for multiple roles
 # This means that the variable will be overwritten if we define it on host or group level
-# To keep it simple just open up necessary ports on all VMs
+# To keep it simple just set all variables in this file, all.yml
+
 firewalld_ports:
+  - 53/tcp # DNS (nsd)
+  - 53/udp # DNS (nsd)
   - 5432/tcp # PostgreSQL
   - 9090/tcp # Prometheus
   - 9100/tcp # Prometheus node exporter
   - 9987/udp # TeamSpeak3 server
+
+postgresql_listen_addresses: "*"
+
+postgresql_allowed_networks:
+  - 192.168.123.0/24
+
+postgresql_users:
+  - name: daniel
+    password: test
+    state: present
+
+postgresql_databases:
+  - name: daniel
+    owner: daniel
+    state: present
+
+nsd_ip_address: 127.0.0.1
+
+nsd_zones:
+  - name: lab.internal
+    soa: lab01.lab.internal
+    serial: 1
+    name_servers:
+      - lab01
+    records:
+      - name: lab01
+        content: 192.168.123.11
+      - name: lab02
+        content: 192.168.123.12

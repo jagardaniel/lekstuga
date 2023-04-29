@@ -1,0 +1,36 @@
+---
+
+- name: Install packages
+  ansible.builtin.package:
+    name: nsd
+    state: present
+
+- name: Create directory for zones
+  ansible.builtin.file:
+    path: "{{ nsd_zonesdir }}"
+    state: directory
+
+- name: Copy configuration
+  ansible.builtin.template:
+    src: local.conf.j2
+    dest: /etc/nsd/conf.d/local.conf
+    validate: /usr/sbin/nsd-checkconf %s
+  notify:
+    - restart nsd
+
+- name: Copy zone files
+  ansible.builtin.template:
+    src: zone.j2
+    dest: "{{ nsd_zonesdir }}/{{ item.name }}.zone"
+    validate: "/usr/sbin/nsd-checkzone {{ item.name }} %s"
+  loop: "{{ nsd_zones }}"
+  loop_control:
+    label: "{{ item.name }}"
+  notify:
+    - reload zones
+
+- name: Start and enable service
+  ansible.builtin.service:
+    name: nsd
+    state: started
+    enabled: yes
