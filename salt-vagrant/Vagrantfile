@@ -1,0 +1,55 @@
+# https://docs.saltproject.io/salt/install-guide/en/latest/topics/install-by-operating-system/debian.html
+
+$salt_repo = <<-SCRIPT
+  sudo mkdir /etc/apt/keyrings
+  sudo curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring.gpg https://repo.saltproject.io/salt/py3/debian/11/amd64/SALT-PROJECT-GPG-PUBKEY-2023.gpg
+  echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring.gpg arch=amd64] https://repo.saltproject.io/salt/py3/debian/11/amd64/latest bullseye main" | sudo tee /etc/apt/sources.list.d/salt.list
+SCRIPT
+
+$salt_master = <<-SCRIPT
+  sudo apt update -y
+  sudo apt install salt-master -y
+SCRIPT
+
+$salt_minion = <<-SCRIPT
+  echo "192.168.123.10 salt" | sudo tee -a /etc/hosts
+
+  sudo apt update -y
+  sudo apt install salt-minion -y
+SCRIPT
+
+Vagrant.configure("2") do |config|
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.box = "debian/bullseye64"
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+    v.cpus = 2
+  end
+
+  config.vm.define "master", primary: true do |master|
+    master.vm.hostname = "saltmaster"
+    master.vm.network "private_network", ip: "192.168.123.10"
+
+    master.vm.provider "virtualbox" do |v|
+      v.memory = 1024
+    end
+
+    master.vm.provision "shell", inline: $salt_repo
+    master.vm.provision "shell", inline: $salt_master
+  end
+
+  # Create Salt minion VMs
+  # The IP assigment is not very beautiful but it works since we don't need that many VMs
+  vms = ["minion01", "minion02"]
+
+  vms.each_with_index do |name, index|
+    config.vm.define name do |minion|
+      minion.vm.hostname = name
+      minion.vm.network "private_network", ip: "192.168.123.1#{index + 1}"
+
+      minion.vm.provision "shell", inline: $salt_repo
+      minion.vm.provision "shell", inline: $salt_minion
+    end
+  end
+end
