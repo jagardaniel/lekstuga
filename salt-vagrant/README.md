@@ -1,9 +1,6 @@
 # salt-vagrant
 A Vagrant lab environment for Salt
 
-## Overview
-A Vagrant lab environment to play around with Salt.
-
 ## Requirements
 - VirtualBox
 - Vagrant
@@ -62,3 +59,6 @@ minion02:
 minion01:
     3002.6
 ```
+
+## Usage
+...
