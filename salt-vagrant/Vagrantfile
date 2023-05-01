@@ -1,6 +1,7 @@
 # https://docs.saltproject.io/salt/install-guide/en/latest/topics/install-by-operating-system/debian.html
 
 $salt_repo = <<-SCRIPT
+  sudo apt update -y
   sudo apt install curl -y
   sudo mkdir /etc/apt/keyrings
   sudo curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring.gpg https://repo.saltproject.io/salt/py3/debian/11/amd64/SALT-PROJECT-GPG-PUBKEY-2023.gpg
@@ -8,14 +9,11 @@ $salt_repo = <<-SCRIPT
 SCRIPT
 
 $salt_master = <<-SCRIPT
-  sudo apt update -y
   sudo apt install salt-master -y
 SCRIPT
 
 $salt_minion = <<-SCRIPT
   echo "192.168.123.10 salt" | sudo tee -a /etc/hosts
-
-  sudo apt update -y
   sudo apt install salt-minion -y
 SCRIPT
 
