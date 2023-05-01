@@ -1,7 +1,6 @@
 doas:
-  pkg.installed:
-    - pkgs:
-      - doas
+  pkg:
+    - installed
 
 /etc/doas.conf:
   file.managed:

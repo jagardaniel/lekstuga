@@ -62,3 +62,14 @@ minion01:
 
 ## Usage
 ...
+
+Target all minions and run states based on the top file.
+
+```bash
+vagrant@saltmaster:~$ sudo salt '*' state.apply
+```
+
+Run `doas` state on minion01
+```bash
+vagrant@saltmaster:~$ sudo salt 'minion01' state.apply doas
+```
