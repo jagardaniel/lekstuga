@@ -52,3 +52,26 @@ lab02 | SUCCESS => {
 
 ## Run playbooks
 ..
+
+
+## AWX
+Lets see if we can use AWX to target our lab VMs. From AWX github: "AWX provides a web-based user interface, REST API, and task engine built on top of Ansible." The preferred way to install AWX is to use their AWX Operator and deploy it to a Kubernetes cluster. I will use minikube since I don't have access to a fancy and expensive cloud environment.
+
+So just follow the installation instruction in the awx-operator repository: https://github.com/ansible/awx-operator#usage
+
+I had do add `--no-vtx-check` for minikube to work with VirtualBox on Windows 11 with WSL2 installed.
+```
+> minikube start --cpus=4 --memory=6g --addons=ingress --driver=virtualbox --no-vtx-check
+```
+
+A lot of magic happens but eventually you should be able to reach the AWX web interface and login as admin.
+
+Then start up the Vagrant environment again. I commented out the Ansible control node in the Vagrantfile since we don't need it for this lab (and I don't have enough RAM).
+
+```bash
+$ vagrant up
+```
+
+I don't know what a "real" production setup in AWX would look like, but this was enough to run a playbook:
+
+Under resources in the menu: Add our lab hosts. Remember to set `ansible_host` with the IP address for every host just like the normal inventory file. Add the private vagrant key as machine credential. Create an inventory and add the hosts and groups. Create a project and point it to this git repository. It should be able to find playbooks automatically. You can then create a job template and run it.
